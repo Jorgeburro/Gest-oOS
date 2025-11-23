@@ -1,0 +1,35 @@
+﻿.mapa-sala {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* Cria o grid de 10 colunas */
+    gap: 8px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+#detalhes-posicao-container .list-group-item {
+    font-size: 0.9rem;
+}
+
+.posicao-mapa.em-manutencao {
+    background-color: #f8d7da; /* Fundo vermelho claro */
+    border-color: #dc3545; /* Borda vermelha */
+}
+
+.list-group mb-3{
+    display: flex;
+    flex-direction: column;
+}
+
+/* Para o item da lista de ativos na partial view */
+.list-group-item.ativo-em-manutencao {
+    background-color: #f8d7da !important; /* Fundo vermelho claro */
+    color: #58151c; /* Texto escuro para contraste */
+    border-color: #f1aeb5;
+}
+
+#lista-ativos-selecao{
+    display: flex;
+    flex-direction: column;
+}

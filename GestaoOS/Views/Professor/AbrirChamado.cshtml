@@ -1,0 +1,132 @@
+﻿@model Sala
+@using System.Collections.Generic
+@{
+    ViewData["Title"] = "Abrir Chamado";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/gerenciarOS.css" />
+    <link rel="stylesheet" href="~/css/gerenciarAtivos.css" />
+
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div>
+    <p class="titlePage"><img class="icon" src="~/Assets/add.png" alt="Icone"> Abrir Chamado</p>
+    <p class="descrption">Selecione a sala e clique na posição do mapa para reportar um problema em um ativo fixo, ou use a busca para ativos móveis.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="AbrirChamado" method="get" id="formFiltroSala">
+            <div class="input-group mb-3">
+                <select name="salaId" class="form-select" asp-items="ViewBag.Salas" onchange="this.form.submit();">
+                    <option value="">Selecione uma Sala para ver o mapa...</option>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model != null)
+{
+<section class="container">
+
+    <article class="box boxMain">
+        <p class="titleBox"><img class="icon" src="~/Assets/gps.png" alt="Icone"> Mapa de Ativos Fixos: @Model.Nome</p>
+            <div class="roomAtivos">
+                <p>Frente da Sala</p>
+                <div class="ativos mapa-sala">
+                    <p class="numeration">1 <br>2 <br>3 <br>4 <br>5</p>
+                    
+                    <div class="boxAtivos">
+                        <div class="containerAtivos">
+                            @foreach (var pos in Model.Posicoes)
+                            {
+                                bool emManutencao = pos.Ativos.Any(a => a.Status == "Manutencao");
+
+                                <a style="padding: 0px; border: none;" class="posicao-mapa ativo @(pos.Ativos.Any() ? "check" : "") @(emManutencao ? "danger" : "")"
+                                     data-url="@Url.Action("DetalhesPosicaoParaOSPartial", "Professor", new { posicaoId = pos.Id })">
+                                </a>
+                            }
+                        </div>
+                        <p class="numeration">1 2 3 4 5 6 7 8</p>
+                    </div>
+            </div>
+        </div>        
+    </article>
+    
+    <article class="box datas" id="detalhes-posicao-container">
+        <div class="caixa-detalhes-vazio">
+            <img class="icon" src="~/Assets/info.png" />
+            <p>Clique em uma posição para ver os ativos e abrir um chamado.</p>
+        </div>
+    </article>
+
+</section>
+
+<article class="mt-5">
+    <p class="titleBox"><img class="icon" src="~/Assets/chair.png" alt="Icone"> Abrir Chamado para Ativo Móvel (Cadeira)</p>
+    <form asp-controller="OrdemDeServicos" asp-action="Create" method="post" enctype="multipart/form-data" class="form-os-movel">
+        @Html.AntiForgeryToken()
+        <div class="row align-items-end g-3" style="display: flex; flex-direction:column; gap: 20px">
+            <div class="inputs">
+                <label for="cadeira-id" class="form-label">Buscar Cadeira (Nome/N° Série)</label>
+                <select id="cadeira-id" name="AtivoId" placeholder="Digite para buscar..." required>
+                    <option value="">Digite para buscar...</option>
+                </select>
+            </div>
+            <div class="inputs">
+                <label for="cadeira-descricao" class="form-label">Descrição do Problema</label>
+                <input type="text" name="Descricao" id="cadeira-descricao" class="form-control" required />
+            </div>
+            <div class="inputs">
+                <label for="cadeira-imagem" class="form-label">Imagem</label>
+                <input type="file" name="Imagem" id="cadeira-imagem" class="form-control form-control-sm" />
+            </div>
+            <div class="inputs">
+                <button type="submit" class="btn btn-danger w-100">Abrir OS</button>
+            </div>
+        </div>
+    </form>
+</article>
+}
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script src="~/js/GerenciarOS.js" asp-append-version="true"></script>
+
+    <script>
+        // Este script inicializa o autocompletar para a busca de cadeiras
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('cadeira-id')) {
+                new TomSelect('#cadeira-id', {
+                    valueField: 'id',
+                    labelField: 'text',
+                    searchField: 'text',
+                    create: false,
+                    // Função que busca os dados no nosso Controller via AJAX
+                    load: function(query, callback) {
+                        if (!query.length) return callback();
+                        const url = `@Url.Action("BuscarCadeiras", "OrdemDeServicos")?salaId=@Model?.Id&termo=${encodeURIComponent(query)}`;
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(json => {
+                                callback(json);
+                            }).catch(() => {
+                                callback();
+                            });
+                    }
+                });
+            }
+        });
+    </script>
+}

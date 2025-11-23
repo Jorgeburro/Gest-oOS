@@ -1,0 +1,94 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using GestaoOS.Models
+@using GestaoOS.Services 
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Gestão OS</title>
+    <link rel="stylesheet" href="~/css/ativos.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <header>
+        <img class="logo" src="~/Assets/senai.png" alt="Logo - Senai">
+        @if (SignInManager.IsSignedIn(User))
+        {
+         
+            <div class="infos">
+                <div class="user-info">
+                    <p>
+                        @if (User.IsInRole(RolesGlobais.Gestor))
+                        {
+                            @RolesGlobais.Gestor
+                        }
+                        else if (User.IsInRole(RolesGlobais.Professor))
+                        {
+                            @RolesGlobais.Professor
+                        }
+                        else if (User.IsInRole(RolesGlobais.Manutencao))
+                        {
+                            @RolesGlobais.Manutencao
+                        }
+                        
+                    </p>
+                </div>
+                <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                    <button type="submit" class="exit btn">
+                        <img class="icon" src="~/Assets/log-out.png" alt="Icone">
+                        <p>Sair</p>
+
+                    </button>
+                </form>
+            </div>
+        }
+    </header>
+
+    <main role="main">
+        <section class="detailsPage">
+
+            <nav>
+                @if (SignInManager.IsSignedIn(User))
+                {
+
+                    @* === MENU DO GESTOR === *@
+                    @if (User.IsInRole(RolesGlobais.Gestor))
+                    {
+                        <a asp-controller="Home" asp-action="DashboardGestor"> <img class="icon" src="~/Assets/bar-chart.png" alt="Icone"> Dashboard</a>
+                        <a asp-controller="Usuarios" asp-action="Index"> <img class="icon" src="~/Assets/group.png" alt="Icone">Gerenciar Usuários</a>
+                        <a asp-controller="Salas" asp-action="Create"> <img class="icon" src="~/Assets/gps.png" alt="Icone">Gerenciar Salas</a>
+                        <a asp-controller="Ativos" asp-action="Gerenciar"> <img class="icon" src="~/Assets/box.png" alt="Icone">Gerenciar Ativos</a>
+                    }
+
+                    @* === MENU DO PROFESSOR === *@
+                    @if (User.IsInRole(RolesGlobais.Professor))
+                    {
+                        <a asp-controller="Professor" asp-action="AbrirChamado"> <img class="icon" src="~/Assets/add.png" alt="Icone"> Abrir Chamado</a>
+                        <a asp-controller="Professor" asp-action="MeusChamados"> <img class="icon" src="~/Assets/list.png" alt="Icone"> Meus Chamados</a>
+                    }
+
+                    @* === MENU DA MANUTENÇÃO === *@
+                    @if (User.IsInRole(RolesGlobais.Manutencao))
+                    {
+                        <a asp-controller="Manutencao" asp-action="MinhasOrdens"> <img class="icon" src="~/Assets/tool.png" alt="Icone"> Minhas Ordens de Serviço</a>
+                    }
+
+                }
+            </nav>
+        </section>
+
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

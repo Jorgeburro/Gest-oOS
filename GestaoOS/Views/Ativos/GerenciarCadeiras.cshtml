@@ -1,0 +1,75 @@
+﻿@model IEnumerable<GestaoOS.Models.Ativo>
+
+<head>
+    <link rel="stylesheet" href="~/css/listar.css" asp-append-version="true" />
+</head>
+
+@{
+    var sala = ViewBag.Sala as Sala;
+    ViewData["Title"] = $"Gerenciar Cadeiras - {sala.Nome}";
+}
+
+<section class="detailsPage">
+    <p class="titlePage"><img class="big icon" src="~/Assets/chair.png" alt="Icone"> Gerenciar Cadeiras da Sala "@sala.Nome"</p>
+    <a asp-action="Gerenciar" asp-route-salaId="@sala.Id" class="exit btn">Voltar ao Mapa da Sala</a>
+</section>
+
+<section class="mainPage">
+    <article class="box">
+        <p class="titleBox">Adicionar Nova Cadeira</p>
+        <form asp-action="AdicionarCadeira" method="post" class="row g-3 align-items-end">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="salaId" value="@sala.Id" />
+
+            <div class="col-md-5">
+                <label for="nome" class="form-label">Nome / Identificação</label>
+                <input type="text" name="nome" class="form-control" required />
+            </div>
+            <div class="col-md-5">
+                <label for="descricao" class="form-label">Tipo</label>
+                <select name="descricao" class="form-select" asp-items="ViewBag.DescricaoOptions" required>
+                    <option value="">Selecione...</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Adicionar</button>
+            </div>
+        </form>
+    </article>
+
+    <article class="box">
+        <p class="titleBox">Cadeiras Cadastradas (@Model.Count())</p>
+        <table class="table">
+            <thead style ="text-align:left">
+                <tr>
+                    <th>Nome / ID</th>
+                    <th>Tipo</th>
+                    <th style="width: 100px;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cadeira in Model)
+                {
+                    <tr>
+                        <td>@cadeira.Nome</td>
+                        <td>@cadeira.Descricao</td>
+                        <td class="functions" style="text-align:center;">
+                            <form asp-action="EditAtivo" asp-route-id="@cadeira.Id" class="aButton" title="Editar">
+                                        <button type="submit" class="btn" title="Editar">
+                                            <img src="~/Assets/edit-text.png" alt="Editar" style="height:20px; width:20px;" />
+                                        </button>
+                            </form>
+                            <form asp-action="ExcluirAtivo" method="post" onsubmit="return confirm('Tem certeza?');" style="display:inline;" class="aButton">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="ativoId" value="@cadeira.Id" />
+                                        <button type="submit" class="btn" title="Excluir">
+                                            <img src="~/Assets/trash.png" alt="Excluir" style="height:20px; width:20px;" />
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </article>
+</section>

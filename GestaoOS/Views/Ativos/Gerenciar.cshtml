@@ -1,0 +1,134 @@
+﻿@model GestaoOS.Models.Sala
+@{
+    ViewData["Title"] = "Gerenciar Ativos da Sala";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/gerenciarAtivos.css" asp-append-version="true" />
+}
+
+<p class="titlePage"><img class="big icon" src="/Assets/box.png" alt="Icone"> Gerenciamento de Ativos</p>
+<p class="descrption">Cadastre e gerencie os ativos da organização</p>
+
+<section class="mainPage">
+    <article class="box filter">
+        <p class="title2"> <img class="icon" src="~/Assets/filter.png" alt="Icone"> Filtros de Busca</p>
+        <p class="descrption">Escolha uma sala para visualizar e gerenciar o layout</p>
+
+        <form asp-action="Gerenciar" method="get">
+            <div class="inputs">
+                <label for="salaId">Nome da Sala</label>
+                <select name="salaId" id="salaId" class="form-select" asp-items="@(ViewData["Salas"] as SelectList)" onchange="this.form.submit()">
+                    <option value="">-- Selecione uma Sala --</option>
+                </select>
+            </div>
+        </form>
+    </article>
+
+    @if (Model != null)
+    {
+        <section class="container">
+            <article class="box boxMain" id="actions-pane">
+                <p class="titleBox"><img src="~/Assets/gps.png" alt="Icone"> Layout da Sala - @Model.Nome</p>
+                <p class="descrption">Bloco @Model.Bloco - @Model.Posicoes.Count() posições cadastrada(s)</p>
+
+                @{
+                    var salaId1 = Model.Id;
+                    var toalAtivosFuncionando = Model.Ativos.Count(x => x.Status == "Funcional");
+                    var toalAtivosNaoFuncionando = Model.Ativos.Count(x => x.Status != "Funcional");
+                    var totalCadeiras1 = Model.Ativos.Count(a => a.PosicaoId == null && a.TipoAtivo?.Nome == "Cadeira");
+                }
+
+                <div class="options">
+                    <p><img class="icon" src="/Assets/check.png" alt="icone">  Funcionando: @toalAtivosFuncionando</p>
+                    <p><img class="icon" src="/Assets/tool.png" alt="icone"> Em Manutenção: @toalAtivosNaoFuncionando</p>
+                </div>
+                <div class="roomAtivos">
+                    <p>Frente da Sala</p>
+
+                    <div class="ativos">
+                        <p class="numeration">1 <br>2 <br>3 <br>4 <br>5</p>
+
+                        <div class="boxAtivos">
+                            <div class="containerAtivos">
+                                @foreach (var posicao in Model.Posicoes.OrderBy(p => p.NumeroPosicao))
+                                {
+                                    var tem = posicao.Ativos.Any(a => a.TipoAtivo?.Nome != null);
+                                    var statusClass = tem ? "check" : "empty";
+                                    <a style="font-size: 10px" class="ativo check" data-posicao-id="@posicao.Id">
+                                        @posicao.NumeroPosicao
+                                    </a>
+                                }
+                            </div>
+
+                            <p class="numeration">1 2 3 4 5 6 7 8</p>
+                        </div>
+                    </div>
+                </div>
+                
+            </article>
+
+            <article class="box datas" id="details-pane">
+                <p class="titleBox"><img src="~/Assets/info.png" alt="Icone"> Detalhes da Posição</p>
+                <img class="icon found" src="~/Assets/boxGray.png" alt="Icone">
+                <p class="descrption d2">Clique em uma posição no mapa para gerenciar.</p>
+            </article>
+        </section>
+    }
+</section>
+
+@{
+    if (Model is not null)
+    {
+        <section>
+            <article class="box datas" style="max-height: 250px; margin-bottom: 100px;">
+                <p class="titleBox"><img src="~/Assets/info.png" alt="Icone"> Ações Rápidas Destinadas para Cadeiras</p>
+
+                @{
+                    var salaId = Model?.Id;
+                    var totalCadeiras = Model?.Ativos.Count(a => a.PosicaoId == null && a?.TipoAtivo?.Nome == "Cadeira");
+                    var totalCadeirasManutencao = Model?.Ativos.Count(a => a.Status != "Operacional" && a?.TipoAtivo?.Nome == "Cadeira");
+                }
+
+                <a asp-action="GerenciarCadeiras" asp-route-salaId="@Model?.Id">
+                    <p><img class="icon" src="~/Assets/chair.png" alt="Icone Cadeira"> Cadeiras: <span>@totalCadeiras Unidade(s)</span> | <span style="color:red" >@totalCadeirasManutencao Unidade(s) em Manutenção</span></p>
+                </a>
+
+                <br />
+
+                @foreach (var cadeira in Model.Ativos.Where(a => a.PosicaoId == null && a?.TipoAtivo?.Nome == "Cadeira"))
+                {
+                    <hr />
+                    <br />
+                    <p>@cadeira.Nome</p>
+                    
+                    if (cadeira.Status == "Operacional")
+                    {
+                     <p style="color:green">@cadeira.Status</p>
+                            
+                    }
+                    else
+                    {
+                     <p style="color:red">@cadeira.Status</p>       
+                    }
+                    
+                    <p>
+                        <a asp-action="GerenciarCadeiras" asp-route-salaId="@Model?.Id">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="ativoId" value="@cadeira.Id" />
+                            <button type="submit" class="btn" title="Editar">
+                                <img src="/Assets/view.png" alt="Editar" style="height:20px; width:20px;" />
+                            </button>
+                        </a>
+                       
+                    </p>
+                    <br />
+                }
+            </article>
+        </section>
+    }
+}
+
+@section Scripts {
+    <script src="~/js/GerenciamentoAtivos.js" asp-append-version="true"></script>
+}

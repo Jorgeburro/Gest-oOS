@@ -1,0 +1,129 @@
+﻿@model GestaoOS.Models.Posicao
+@{
+   
+}
+
+<p class="titleBox"><img class="icon" src="~/Assets/info.png" alt="Icone"> Posição @Model.NumeroPosicao</p>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/gerenciarOS.css" />
+    <link rel="stylesheet" href="~/css/gerenciarAtivos.css" />
+
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+}
+<div class="mb-4">
+    <h6 style="color: black;">Selecione o Ativo com Problema</h6>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (Model.Ativos == null || !Model.Ativos.Any())
+    {
+        <p class="descrption">Nenhum ativo fixo cadastrado nesta posição.</p>
+    }
+    else
+    {
+        <div id="lista-ativos-selecao" class="list-group mb-3">
+
+            @foreach (var ativo in Model.Ativos.OrderBy(a => a.TipoAtivo.Nome))
+            {
+                bool emManutencao = ativo.Status == "Manutencao";
+
+                <button type="button"
+                        class="lista-ativos list-group-item list-group-item-action d-flex justify-content-between align-items-center @(emManutencao ? "ativo-em-manutencao" : "")"
+                        data-ativoid="@ativo.Id"
+                        @(emManutencao ? "disabled" : "")>
+
+                    <div>
+                        @ativo.TipoAtivo.Nome: <strong>@ativo.Nome</strong>
+                    </div>
+
+                    <div>
+                        @{
+                            if (ativo.TipoAtivo.Nome == "Computador")
+                            {
+                                <img class="icon" src="/Assets/monitor.png" />
+
+                            }
+                            else if (ativo.TipoAtivo.Nome == "Mouse")
+                            {
+                                <img class="icon" src="/Assets/mouse.png" />
+                            }
+                            else if (ativo.TipoAtivo.Nome == "Mesa")
+                            {
+                                <img class="icon" src="/Assets/table.png" />
+                            }
+                            else if (ativo.TipoAtivo.Nome == "Teclado")
+                            {
+                                <img class="icon" src="/Assets/keybord.png" />
+                            }
+                        }
+                    </div>
+                </button>
+            }
+        </div>
+
+        <form id="form-os-fixo" asp-controller="OrdemDeServicos" asp-action="Create" method="post" enctype="multipart/form-data" class="d-none">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="AtivoId" id="ativo-id-selecionado" />
+
+            <h6 style="color: black;">Descreva o Problema para <strong id="nome-ativo-selecionado"></strong></h6>
+            <div class="mb-2">
+                <textarea name="Descricao" style="width: 100%;" rows="3" placeholder="Ex: A tela está piscando, o mouse não funciona..." required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="formFileSm" class="form-label">Anexar Imagem (Opcional)</label>
+                <input class="form-control form-control-sm" name="Imagem" type="file" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-danger">Abrir Ordem de Serviço</button>
+        </form>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Espera o documento carregar
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // 1. Pega todos os elementos que vamos usar
+            const botoesAtivo = document.querySelectorAll('.lista-ativos:not(.ativo-em-manutencao)');
+            const formOS = document.getElementById('form-os-fixo');
+            const inputAtivoId = document.getElementById('ativo-id-selecionado');
+            const spanNomeAtivo = document.getElementById('nome-ativo-selecionado');
+
+            // 2. Adiciona um evento de clique para cada botão da lista
+            botoesAtivo.forEach(function(botao) {
+                botao.addEventListener('click', function() {
+
+                    // --- GERENCIA A SELEÇÃO ---
+
+                    // Primeiro, remove a classe 'active' de todos os botões
+                    botoesAtivo.forEach(btn => btn.classList.remove('active'));
+
+                    // Segundo, adiciona a classe 'active' APENAS no botão que foi clicado
+                    this.classList.add('active');
+
+                    // --- ATUALIZAÇÃO DO FORMULÁRIO ---
+
+                    // 3. Pega os dados do botão que foi clicado
+                    const ativoId = this.dataset.ativoid;
+                    // Encontra o <strong> dentro do botão clicado e pega seu texto
+                    const ativoNome = this.querySelector('strong').innerText;
+
+                    // 4. Preenche os campos do formulário
+                    inputAtivoId.value = ativoId;      // Coloca o ID no input escondido
+                    spanNomeAtivo.innerText = ativoNome; // Coloca o nome no <strong>
+
+                    // 5. Mostra o formulário
+                    formOS.classList.remove('d-none');
+                });
+            });
+        });
+    </script>
+}

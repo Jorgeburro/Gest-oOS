@@ -1,0 +1,234 @@
+﻿@model IEnumerable<GestaoOS.Models.OrdemDeServico>
+
+<head>
+    <link rel="stylesheet" href="~/css/listar.css">
+    <link rel="stylesheet" href="~/css/dashboard.css">
+</head>
+
+@{
+    ViewData["Title"] = "Todas as Ordens de Serviço";
+    var statusCounts = Model.GroupBy(o => o.Status).ToDictionary(g => g.Key, g => g.Count());
+}
+
+<div>
+    <p class="titlePage"><img class="big icon" src="~/Assets/list.png" alt="Icone"> @ViewData["Title"]</p>
+    <p class="descrption">Visualize e atribua todas as ordens de serviço do sistema.</p>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<!-- Cards de Estatísticas -->
+<div class="kpi-container stats-cards" style="flex-wrap:wrap;">
+    <div class="kpi-card">
+        <div class="card-body stat-card espera">
+            <h5 class="card-title">@(statusCounts.GetValueOrDefault("Em Espera", 0))</h5>
+            <p class="card-title">Em Espera (Urgente)</p>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="card-body stat-card aberta">
+            <h5 class="card-title">@(statusCounts.GetValueOrDefault("Aberta", 0))</h5>
+            <p class="card-title">Abertas</p>
+        </div>
+    </div>
+    
+    <div class="kpi-card">
+        <div class="card-body stat-card andamento">
+            <h5 class="card-title">@(statusCounts.GetValueOrDefault("Em Andamento", 0))</h5>
+            <p class="card-title">Em Andamento</p>
+        </div>
+    </div>
+    
+    <div class="kpi-card">
+        <div class="kpi-body stat-card concluida">
+            <h5 class="card-title">@(statusCounts.GetValueOrDefault("Concluída", 0))</h5>
+            <p class="card-title">Concluídas</p>
+        </div>
+    </div>
+</div>
+
+<!-- Seção de Filtros -->
+<article class="box kpi-card filter-section">
+    <form asp-action="ListagemCompleta" method="get" class="row g-3 align-items-end">
+        <div class="box col-md-4">
+            <label for="statusFiltro" class="title2 form-label" style="text-align: start">
+                <img class="icon" src="~/Assets/filter.png" alt="Filtro"> Filtrar por Status
+            </label>
+            <select name="statusFiltro" id="statusFiltro" class="form-select" asp-items="ViewBag.StatusOptions">
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <a asp-action="ListagemCompleta" class="btn btn-outline-secondary w-100">Limpar</a>
+        </div>
+        <div class="col-md-4 text-end">
+            <small class="text-muted">
+                Mostrando @Model.Count() ordem(ns) de serviço
+            </small>
+        </div>
+    </form>
+</article>
+
+<div style="min-width: 250px; overflow-x: scroll; text-align:center; align-content: space-between;">
+    <table class="lista-OS">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Ativo</th>
+                <th>Sala</th>
+                <th>Solicitante</th>
+                <th>Data Abertura</th>
+                <th>Responsável</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                string rowClass = item.Status switch
+                {
+                    "Em Espera" => "os-em-espera",
+                    "Concluída" => "os-concluida",
+                    "Aberta" => "os-aberta",
+                    "Em Andamento" => "os-em-andamento",
+                    _ => ""
+                };
+
+                string badgeClass = item.Status switch
+                {
+                    "Em Espera" => "badge-em-espera",
+                    "Concluída" => "badge-concluida",
+                    "Aberta" => "badge-aberta",
+                    "Em Andamento" => "badge-em-andamento",
+                    _ => "bg-secondary"
+                };
+
+                <tr class="@rowClass">
+                    <td>
+                        <span class="badge @badgeClass">@item.Status</span>
+                        @if (item.Status == "Em Espera")
+                        {
+                            <p style="color:red;">URGENTE</p>
+                        }
+                    </td>
+                    <td>
+                        <strong>@item.Ativo.Nome</strong>
+                        @if (!string.IsNullOrEmpty(item.Ativo.NumeroSerie))
+                        {
+                            <br>
+                    
+                            <small class="text-muted">Série: @item.Ativo.NumeroSerie</small>
+                        }
+                    </td>
+                    <td>
+                        <span class="badge bg-info text-dark">@item.Ativo.Sala.Nome</span>
+                    </td>
+                    <td>@item.Solicitante.Nome</td>
+                    <td>
+                        <strong>@item.DataCriacao.ToString("dd/MM/yyyy")</strong>
+                        <br><small class="text-muted">@item.DataCriacao.ToString("HH:mm")</small>
+                        @{
+                            var diasAberta = (DateTime.Now - item.DataCriacao).Days;
+                        }
+                        @if (diasAberta > 3 && item.Status != "Concluída")
+                        {
+                            <br>
+                    
+                            <small class="text-danger">@diasAberta dia(s) em aberto</small>
+                        }
+                    </td>
+                    <td>
+                        @if (item.ResponsavelId == null)
+                        {
+                            <form asp-controller="OrdemDeServicos" asp-action="AtribuirResponsavel" method="post" style="text-align;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="ordemDeServicoId" value="@item.Id" />
+                                <input type="hidden" name="returnUrl" value="@Url.Action("ListagemCompleta", "OrdemDeServicos", new { statusFiltro = ViewBag.StatusFiltro })" />
+                                <div class="input-group input-group-sm flex-nowrap" style="display: flex; gap: 10px;margin:20px;">
+                                    <select name="responsavelId" class="form-select" asp-items="ViewBag.TecnicosManutencao" required>
+                                        <option value="">Atribuir a...</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">OK</button>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center">
+                                <img class="icon me-1" src="~/Assets/user.png" alt="Técnico">
+                                <span>@item.Responsavel.Nome</span>
+                            </div>
+                            @if (item.SlaAlvo.HasValue)
+                            {
+                                <br>
+                    
+                                <small class="text-muted">SLA: @item.SlaAlvo.Value.ToString("dd/MM/yyyy")</small>
+                            }
+                        }
+                    </td>
+                    <td >
+                        <div class="container-elementos">
+                        <a asp-controller="OrdemDeServicos" asp-action="Details" asp-route-id="@item.Id"
+                           class="btn btn-outline-primary btn-sm" title="Ver Detalhes">
+                            <img class="icon" src="~/Assets/view.png" alt="Detalhes">
+                        </a>
+
+                        @if (item.Status == "Em Espera")
+                        {
+                            <form asp-controller="OrdemDeServicos" asp-action="AprovarEspera" asp-route-id="@item.Id"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Liberar esta OS da espera?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-warning btn-sm" title="Liberar da Espera">
+                                    <img class="icon" src="~/Assets/play.png" alt="Liberar">
+                                </button>
+                            </form>
+                        }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="container-table" style="width: 100%;">
+    @if (!Model.Any())
+    {
+        <p class="text-muted mt-2" style="margin-top: 20px;">
+            <img class="icon" src="~/Assets/danger.png" alt="Vazio">
+            @if (!string.IsNullOrEmpty(ViewBag.StatusFiltro as string))
+            {
+                <span>Nenhuma ordem de serviço encontrada com o status "@ViewBag.StatusFiltro".</span>
+            }
+            else
+            {
+                <span>Nenhuma ordem de serviço cadastrada no sistema.</span>
+            }
+        </p>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-submit do filtro quando mudar
+            document.getElementById('statusFiltro').addEventListener('change', function() {
+                this.form.submit();
+            });
+            
+            // Destacar linhas em espera com animação sutil
+            document.querySelectorAll('.os-em-espera').forEach(row => {
+                row.style.transition = 'all 0.3s ease';
+            });
+        });
+    </script>
+}

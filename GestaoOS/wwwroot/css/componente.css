@@ -1,0 +1,34 @@
+.boxes{
+    display: flex;
+    gap: 50px;
+}
+
+.box{
+    max-width: 345px;
+}
+
+.b3{
+    margin-top: 20px;
+    width: 150px;
+}
+
+.inputDescription{
+    height: 115px;
+    word-wrap: break-word;
+    border: 1px solid rgb(211, 211, 211);
+    text-indent: 10px;
+}
+
+.inputs{
+    gap: 10px;
+}
+
+.obs{
+    display: none;
+}
+
+@media (max-width: 800px){
+    .boxes{
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,93 @@
+﻿@model GestaoOS.Models.Sala
+@{
+    ViewData["Title"] = "Cadastrar Ordem de Serviço";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/gerenciarAtivos.css" asp-append-version="true" />
+}
+
+<section class="detailsPage">
+    <p class="titlePage"><img class="big icon" src="~/Assets/tool.png" alt="Icone"> Cadastrar Ordem de Serviço</p>
+    <p class="descrption">Selecione uma sala para visualizar os ativos e abrir um chamado.</p>
+</section>
+
+<section class="mainPage">
+    <article class="box filter">
+        <p class="title2"> <img class="icon" src="~/Assets/filter.png" alt="Icone"> Filtros de Busca</p>
+        <p class="descrption">Escolha uma sala para visualizar o layout dos ativos</p>
+
+        <form asp-action="Create" method="get">
+            <div class="inputs">
+                <label for="salaId">Nome da Sala</label>
+                <select name="salaId" id="salaId" asp-items="@(ViewData["Salas"] as SelectList)" onchange="this.form.submit()">
+                    <option value="">-- Selecione uma Sala --</option>
+                </select>
+            </div>
+    
+        </form>
+    </article>
+
+    @if (Model != null)
+    {
+        <section class="container">
+            <article class="box boxMain">
+                <p class="titleBox"><img src="~/Assets/gps.png" alt="Icone"> Layout da Sala - @Model.Nome</p>
+                <p class="descrption">Bloco @Model.Bloco - @Model.Ativos.Count() ativo(s) cadastrado(s)</p>
+
+                <div class="options">
+                    @{
+                        var funcionando = Model.Ativos.Count(a => a.Status == "Funcional");
+                        var emManutencao = Model.Ativos.Count(a => a.Status != "Funcional");
+                    }
+                    <p><img class="icon" src="~/Assets/check.png" alt="icone"> Funcionando: @funcionando</p>
+                    <p><img class="icon" src="~/Assets/tool.png" alt="icone"> Em Manutenção: @emManutencao</p>
+                </div>
+
+                <div class="roomAtivos">
+                    <p>Frente da Sala</p>
+                    <div class="ativos">
+                        <div class="boxAtivos">
+                            <div class="containerAtivos">
+                                @for (int i = 1; i <= 40; i++)
+                                {
+                                    var ativo = Model.Ativos.FirstOrDefault(a => a.Id == i);
+                                    if (ativo != null)
+                                    {
+                                        var statusClass = ativo.Status == "Funcional" ? "check" : "danger";
+                                        <a class="ativo @statusClass" data-ativo-id="@ativo.Id" data-posicao="@i" href="#"></a>
+                                    }
+                                    else
+                                    {
+                                        // Posição vazia
+                                        <div class="ativo empty"></div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="box datas" id="details-pane">
+                <p class="titleBox"><img src="~/Assets/info.png" alt="Icone"> Informações</p>
+                <img class="icon found" src="~/Assets/boxGray.png" alt="Icone">
+                <p class="descrption d2">Clique em um ativo no layout da sala para ver seus detalhes e criar a OS.</p>
+
+                @* O conteúdo detalhado do ativo e o formulário de OS serão carregados aqui via JavaScript no próximo passo. *@
+            </article>
+        </section>
+    }
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Futuramente, aqui entrará o código JavaScript para:
+        // 1. Capturar o clique em um ativo do mapa.
+        // 2. Fazer uma chamada ao servidor para buscar os detalhes/componentes do ativo.
+        // 3. Popular a área de "Informações" com os dados recebidos e o formulário para criar a OS.
+    </script>
+}

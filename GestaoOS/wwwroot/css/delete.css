@@ -1,0 +1,18 @@
+.inputs{
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.inputs a, .inputs input{
+    padding: 10px;
+}
+
+.especial{
+    background-color: tomato;
+    color: white;
+}
+
+.especial:hover{
+    background-color: rgb(187, 64, 43);
+}

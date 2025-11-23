@@ -1,0 +1,17 @@
+﻿@model GestaoOS.Models.Usuario
+
+@{
+    ViewData["Title"] = "Detalhes do Usuário";
+}
+
+<p class="titlePage"><img class="big icon" src="/Assets/user.png" alt="Icone"> Detalhes do Usuário</p>
+<p class="descrption">Visualize todos os detalhes do usuário</p>
+
+<div>
+    <p>Nome: @Model.Nome</p>
+    <p>Nome: @Model.Email</p>
+</div>
+<div style="display: flex; gap: 50px">
+    <a class="submit" asp-action="Index" class="btn btn-secondary"><input type="submit" class="submit" value="Voltar"></a>
+    <a class="submit" asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-secondary"><input class="submit" type="submit" value="Editar"></a>
+</div>

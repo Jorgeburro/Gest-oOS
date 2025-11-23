@@ -1,0 +1,24 @@
+﻿@model GestaoOS.Models.Ativo
+
+<p class="titleBox"><img src="~/Assets/info.png" alt="Icone"> Detalhes do Ativo - Posição @Model.Posicao</p>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" name="AtivoId" value="@Model.Id" />
+
+    <div class="component">
+        <p class="titleCompent"><img class="icon" src="~/Assets/box.png" alt="Icone"> @Model.TipoAtivo.Nome</p>
+        <p class="descrption">@Model.Nome</p>
+        <p class="details d1">Status: &ensp; @Model.Status</p>
+        <p class="details">Patrimônio: &ensp; @Model.NumeroSerie</p>
+    </div>
+
+    <div class="form-group-os">
+        <label for="Descricao">Descreva o problema ou a solicitação:</label>
+        <textarea name="Descricao" class="form-control-os" rows="4" placeholder="Ex: O computador não liga, mouse não funciona..."></textarea>
+    </div>
+
+    <div class="form-group-os">
+        <input type="submit" value="Abrir Chamado" class="submit" />
+    </div>
+</form>
+

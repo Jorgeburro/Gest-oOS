@@ -1,0 +1,98 @@
+﻿@model GestaoOS.Models.ViewModels.DashboardGraficosViewModel
+@{
+    ViewData["Title"] = "Dashboard de Gráficos";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/graphic.css" asp-append-version="true" />
+}
+
+<div>
+    <p class="titlePage"><img class="icon" src="~/Assets/bar-chart.png" alt="Icone"> @ViewData["Title"]</p>
+    <p class="descrption">Análise de Ordens de Serviço por período, salas e tipos de ativos.</p>
+</div>
+
+<h4 class="mt-4">Métricas Gerais e Performance</h4>
+<div class="kpi-container">
+    <div class="kpi-card">
+        <h5 class="card-title">Tempo Médio 1º Atendimento</h5>
+        <p class="card-text small" id="kpiTempoMedioAtendimento">...</p>
+    </div>
+    <div class="kpi-card">
+        <h5 class="card-title">Tempo Médio de Conclusão</h5>
+        <p class="card-text small" id="kpiTempoMedioConclusao">...</p>
+    </div>
+    <div class="kpi-card alert-warning">
+        <h5 class="card-title">OS Ativas em Espera</h5>
+        <p class="card-text">@Model.AtivasEmEspera</p>
+    </div>
+</div>
+
+<div class="kpi-container mt-4">
+    <div class="kpi-card ranking-card">
+        <h5 class="card-title">Top 5 Técnicos</h5>
+        <ol class="list-group list-group-numbered list-group-flush">
+            @foreach (var item in Model.TopTecnicos)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">@item.Nome | <span class="badge bg-primary rounded-pill">@item.Contagem</span>  </div>
+                    
+                </li>
+            }
+        </ol>
+    </div>
+    <div class="kpi-card ranking-card">
+        <h5 class="card-title">Top 5 Ativos com Mais Chamados</h5>
+        <ol class="list-group list-group-numbered list-group-flush">
+            @foreach (var item in Model.TopAtivos)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">@item.Nome | <span class="badge bg-primary rounded-pill">@item.Contagem</span></div>
+                   
+                </li>
+            }
+        </ol>
+    </div>
+</div>
+<hr />
+<h4 class="mt-4">Análise do Histórico de Ordens de Serviço Concluídas</h4>
+<div class="filters">
+    <div>
+        <label for="startDate" class="form-label">Início</label>
+        <input type="date" id="startDate" class="form-control" />
+    </div>
+    <div>
+        <label for="endDate" class="form-label">Fim</label>
+        <input type="date" id="endDate" class="form-control" />
+    </div>
+    <div style="display: flex; gap:10px;">
+        <button id="btnAplicar" class="btn btn-primary">Aplicar</button>
+        <button id="btnUltimos6" class="btn btn-outline-secondary">Últimos 6 meses</button>
+    </div>
+</div>
+
+<div class="cards">
+    <div class="card">
+        <h5>OS por Mês</h5>
+        <div class="chart-wrap"><canvas id="chartMensal"></canvas></div>
+    </div>
+    <div class="card">
+        <h5>OS por Semana</h5>
+        <div class="chart-wrap"><canvas id="chartSemanal"></canvas></div>
+    </div>
+    <div class="card">
+        <h5>Salas com mais OS</h5>
+        <div class="chart-wrap"><canvas id="chartSalas"></canvas></div>
+    </div>
+    <div class="card">
+        <h5>Tipos de Ativo (Histórico)</h5>
+        <div class="chart-wrap"><canvas id="chartTipos"></canvas></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <script src="~/js/dashboardGraficos.js" asp-append-version="true"></script>
+}

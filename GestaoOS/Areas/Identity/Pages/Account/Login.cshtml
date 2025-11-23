@@ -1,0 +1,53 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "/Views/Shared/_LoginLayout.cshtml";
+}
+<main style="margin-top: 200px; margin-bottom: 100px">
+    <img style="width: 300px; margin-bottom: 30px;" src="~/Assets/senai.png" alt="Logo Senai">
+
+    <div class="icons">
+        <img class="iconBig" src="~/Assets/settings.png" alt="Icone de engrenagem">
+        <img class="iconBig" src="~/Assets/tool.png" alt="Icone de ferramenta">
+    </div>
+
+    <h1>Sistema de Manutenção</h1>
+    <p class="descrption descrptionBig">Gerencie ativos e salas com eficiência</p>
+
+    <article class="card" style="margin-bottom: 100px">
+        <p>Bem-vindo</p>
+        <p class="descrption">Faça login para continuar</p>
+
+        <form id="account" method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="inputs">
+                <label asp-for="Input.Email"></label>
+                <input asp-for="Input.Email" placeholder="seu@email.com" autocomplete="username" aria-required="true" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="inputs">
+                <label asp-for="Input.Password">Senha</label>
+                <input asp-for="Input.Password" placeholder="••••••••" autocomplete="current-password" aria-required="true" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <button id="login-submit" type="submit" class="submit">Logar</button>
+
+            <div class="login-links">
+                <p>
+                    <a asp-page="./ForgotPassword">Esqueceu sua senha?</a>
+                </p>
+                @* <p>
+                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Criar uma nova conta</a>
+                </p> *@
+            </div>
+        </form>
+    </article>
+</main>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

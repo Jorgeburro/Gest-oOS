@@ -1,0 +1,126 @@
+﻿@model GestaoOS.Models.ViewModels.DashboardGestorViewModel
+@{
+    ViewData["Title"] = "Dashboard do Gestor";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/listar.css" asp-append-version="true" />
+</head>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div>
+    <p class="titlePage"><img class="big icon" src="/Assets/box.png" alt="Icone"> Gerenciamento de Ativos</p>
+    <p class="descrption">Cadastre e gerencie os ativos da organização</p>
+</div>
+
+<div class="kpi-container" style="display:flex; gap: 50px; flex-wrap:wrap;">
+    <div class="kpi-card" style="min-width: 200px">
+        <div class="card-body">
+            <h5 class="card-title">Abertas (Não Atribuídas)</h5>
+            <p class="card-text">@Model.OrdensAbertasNaoAtribuidas</p>
+        </div>
+    </div>
+    <div class="kpi-card" style="min-width: 200px">
+        <div class="card-body">
+            <h5 class="card-title">Em Execução</h5>
+            <p class="card-text">@Model.OrdensEmExecucao</p>
+        </div>
+    </div>
+    <div class="kpi-card" style="min-width: 200px">
+        <div class="card-body">
+            <h5 class="card-title">Em Espera</h5>
+            <p class="card-text">@Model.OrdensEmEspera</p>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-main-container" style="display: flex; gap: 50px; flex-wrap: wrap;">
+    <div class="graficos-container" style="min-width: 250px; ">
+        <div class="grafico-box" style="overflow-y:scroll;">
+            <h6>OS Criadas nos Últimos 6 Meses</h6>
+            <a asp-action="DashboardGraficos" class="grafico-link">
+                <canvas id="graficoOsMensal"></canvas>
+            </a>
+        </div>
+    </div>
+
+    <div class="lista-os-container" >
+        <h6 class ="title2">Atribuir Chamados Urgentes</h6>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ativo</th>
+                        <th>Solicitante</th>
+                        <th>Atribuir Responsável</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrdensNaoAtribuidasRecentes)
+                    {
+                        <tr>
+                            <td><a asp-controller="OrdemDeServicos" asp-action="Details" asp-route-id="@item.Id" title="Ver detalhes">@item.Ativo.Nome</a></td>
+                            <td style="text-align:center">@item.Solicitante.Nome</td>
+                            <td>
+                                <form asp-controller="OrdemDeServicos" asp-action="AtribuirResponsavel" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="ordemDeServicoId" value="@item.Id" />
+                                    <input type="hidden" name="returnUrl" value="@Url.Action("DashboardGestor", "Home")" />
+                                    <div class="container-elementos">
+                                        <select name="responsavelId" class="form-select" asp-items="ViewBag.TecnicosManutencao" required>
+                                            <option value="">Atribuir a...</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary">OK</button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center mt-3">
+            <a asp-controller="OrdemDeServicos" asp-action="ListagemCompleta" class="btn btn-outline-primary" style="max-width:300px; margin-top: 20px;">
+                Ver e Atribuir Todas as Ordens de Serviço
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('graficoOsMensal');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: @Html.Raw(Json.Serialize(Model.GraficoMesesLabels)),
+                        datasets: [{
+                            label: 'Ordens de Serviço Abertas',
+                            data: @Html.Raw(Json.Serialize(Model.GraficoContagemDados)),
+                            backgroundColor: 'rgba(0, 91, 170, 0.6)',
+                            borderColor: 'rgba(0, 91, 170, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                });
+            }
+        });
+    </script>
+}

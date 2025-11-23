@@ -1,0 +1,76 @@
+﻿@model IEnumerable<GestaoOS.Models.OrdemDeServico>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Observacao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataCriacao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataInicioExecucao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SlaAlvo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ativo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Solicitante)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Responsavel)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Ativo.Nome)</td>
+                <td>@Html.DisplayFor(modelItem => item.Solicitante.Nome)</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>@Html.DisplayFor(modelItem => item.DataCriacao)</td>
+                <td>@Html.DisplayFor(modelItem => item.DataInicioExecucao)</td>
+                <td>@Html.DisplayFor(modelItem => item.SlaAlvo)</td>
+                <td>@Html.DisplayFor(modelItem => item.Ativo.Nome)</td>
+                <td>@Html.DisplayFor(modelItem => item.Solicitante.Nome)</td>
+                <td>@Html.DisplayFor(modelItem => item.Responsavel.Nome)</td>
+                <td>
+                    @* Professores não veem botões de ação *@
+                    @if (User.IsInRole("Gestor"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Atribuir</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Excluir</a>
+                    }
+
+                    @if (User.IsInRole("Manutencao"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info">Atualizar Status</a>
+                    }
+
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Detalhes</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

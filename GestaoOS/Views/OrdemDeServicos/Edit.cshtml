@@ -1,0 +1,78 @@
+﻿@model GestaoOS.Models.OrdemDeServico
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>OrdemDeServico</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="AtivoId" class="control-label"></label>
+                <select asp-for="AtivoId" class="form-control" asp-items="ViewBag.AtivoId"></select>
+                <span asp-validation-for="AtivoId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SolicitanteId" class="control-label"></label>
+                <select asp-for="SolicitanteId" class="form-control" asp-items="ViewBag.SolicitanteId"></select>
+                <span asp-validation-for="SolicitanteId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ResponsavelId" class="control-label"></label>
+                <select asp-for="ResponsavelId" class="form-control" asp-items="ViewBag.ResponsavelId"></select>
+                <span asp-validation-for="ResponsavelId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descricao" class="control-label"></label>
+                <input asp-for="Descricao" class="form-control" />
+                <span asp-validation-for="Descricao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Observacao" class="control-label"></label>
+                <input asp-for="Observacao" class="form-control" />
+                <span asp-validation-for="Observacao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DataCriacao" class="control-label"></label>
+                <input asp-for="DataCriacao" class="form-control" />
+                <span asp-validation-for="DataCriacao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DataInicioExecucao" class="control-label"></label>
+                <input asp-for="DataInicioExecucao" class="form-control" />
+                <span asp-validation-for="DataInicioExecucao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SlaAlvo" class="control-label"></label>
+                <input asp-for="SlaAlvo" class="form-control" />
+                <span asp-validation-for="SlaAlvo" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label class="control-label">Anexar Nova Imagem (Opcional)</label>
+                <input type="file" name="imagemArquivo" class="form-control" accept="image/*" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="ListagemCompleta">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

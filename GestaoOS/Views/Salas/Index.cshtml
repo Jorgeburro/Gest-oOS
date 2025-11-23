@@ -1,0 +1,67 @@
+﻿@model IEnumerable<GestaoOS.Models.Sala>
+
+@{
+    ViewData["Title"] = "Index";
+    var salas = ViewData["SalasCadastradas"] as List<Sala>;
+}
+
+<section class="mainPage">
+    <article class="box">
+        <p><img class="icon" src="/Assets/add.png" alt="Icone"> Cadastrar nova Sala</p>
+        <p class="descrption">Preencha os dados da nova sala</p>
+
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="msgAlert"></div>
+
+            <div class="inputs">
+                <label >Nome da Sala</label>
+                <input  placeholder="Ex: Sala 101" />
+                <span class="msgAlert"></span>
+            </div>
+            <div class="inputs">
+                <label >Bloco</label>
+                <input  maxlength="1" />
+                <span class="msgAlert"></span>
+            </div>
+            <div class="inputs">
+                <label >Responsável</label>
+                <select  asp-items="ViewBag.ResponsavelId">
+                    <option value="">-- Nenhum --</option>
+                </select>
+            </div>
+            <div class="inputs">
+                <label >Descrição</label>
+                <textarea ></textarea>
+                <span></span>
+            </div>
+
+            <input class="submit" type="submit" value="Cadastrar">
+        </form>
+    </article>
+
+    <article class="box">
+        <p>Salas Cadastradas</p>
+        <p class="descrption">@Model.Count() Salas(s) registrada(s)</p>
+
+        <form>
+            <input type="text" placeholder="Buscar Salas...">
+            <input class="submit" type="submit" value="Filtrar">
+        </form>
+
+        <div class="rooms">
+            @{
+                foreach(var room in Model)
+                {
+                    <div class="room">
+                        <div class="optionsRoom">
+                            <p>@room.Nome</p>
+                        </div>
+                        <p class="descrption dRoom">@room.Bloco</p>
+                        <p class="descrption typeName">@room.Descricao</p>
+                        <p class="descrption responsavel">Responsável: @room?.Responsavel?.Nome?</p>
+                    </div>
+                }
+            }
+        </div>
+    </article>
+</section>

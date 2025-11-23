@@ -1,0 +1,115 @@
+﻿@model GestaoOS.Models.Posicao
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/listar.css" asp-append-version="true" />
+}
+
+<p class="titleBox"><img src="~/Assets/info.png" alt="Icone"> Detalhes Posição - @Model.NumeroPosicao</p>
+
+<div>
+    @if (!Model.Ativos.Any())
+    {
+        <p class="descrption">Nenhum ativo fixo cadastrado nesta posição.</p>
+    }
+    else
+    {
+         
+            var prioridade = new Dictionary<string, int>
+            {
+                ["Computador"] = 1,
+                ["Mouse"] = 2,
+                ["Teclado"] = 3
+            };
+
+            // Se quiser mostrar somente os três tipos, adicione o .Where(...)
+            // var ativosOrdenados = Model.Ativos
+            //     .Where(a => a.TipoAtivo?.Nome is "Computador" or "Mouse" or "Teclado")
+            //     .OrderBy(a => prioridade[a.TipoAtivo!.Nome])
+            //     .ThenBy(a => a.Nome);
+
+            // Prioriza Computador/Mouse/Teclado e manda os demais para o final
+            var ativosOrdenados = Model.Ativos
+                .OrderBy(a => prioridade.ContainsKey(a.TipoAtivo?.Nome ?? "")
+                                ? prioridade[a.TipoAtivo!.Nome]
+                                : 999)
+                .ThenBy(a => a.Nome);
+
+        <div>
+            @foreach (var ativo in Model.Ativos)
+            {
+                <div class="component">
+                    @if(ativo.TipoAtivo?.Nome == "Mouse")
+                    {
+                        <p class="titleCompent"><img class="icon" src="/Assets/mouse.png" alt="Icone"> Mouse</p>
+                    }
+                    else if (ativo.TipoAtivo?.Nome == "Teclado")
+                    {
+                        <p class="titleCompent"><img class="icon" src="/Assets/keybord.png" alt="Icone"> Teclado</p>
+                    }
+                    else if (ativo.TipoAtivo?.Nome == "Cadeira")
+                    {
+                        <p class="titleCompent"><img class="icon" src="/Assets/chair.png" alt="Icone"> Cadeira</p>
+                    }
+                    else if (ativo.TipoAtivo?.Nome == "Mesa")
+                    {
+                        <p class="titleCompent"><img class="icon" src="/Assets/table.png" alt="Icone"> Mesa</p>
+                    }
+                    else
+                    {
+                        <p class="titleCompent"><img class="icon" src="/Assets/monitor.png" alt="Icone"> Computador</p>
+                    }
+
+                    <p class="descrption">@ativo.Nome</p>
+
+
+                    <p class="details d1">Status: &ensp;
+                        @{
+                            if (ativo.Status == "Operacional")
+                            {
+                                <img class="icon" src="/Assets/checkButton.png" alt="Icone"> <span>Funcionando</span>
+                            }
+                            else
+                            {
+                                <img class="icon" src="/Assets/dangerButton.png" alt="Icone"> <span>Em manutenção</span>
+                            }
+                        }
+                    </p>
+                
+                    <p class="details">Numero Série: &ensp; <img class="icon" src="/Assets/group.png" alt="Icone"> @ativo.NumeroSerie</p>
+
+                    <a asp-action="Details" asp-route-Id="@ativo.Id" class="aButton"><img class="icon view specialClick" src="/Assets/view.png" alt="Icone"></a>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<hr />
+<br />
+<div>
+    <p class="titleCompent"><img class="icon" src="/Assets/box.png" alt="Icone"> Adicionar Ativo</p>
+    <p class="descrption">Ativos de vários tipos já definidos</p>
+
+    <form id="form-adicionar-ativo-fixo" asp-controller="Ativos" asp-action="AdicionarAtivoFixo" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PosicaoId" value="@Model.Id" />
+        <input type="hidden" name="SalaId" value="@Model.SalaId" />
+        <input type="hidden" name="Status" value="Funcional" />
+
+        <div class="mb-2">
+            <label class="form-label">Tipo</label>
+            <select name="TipoAtivoId" class="form-select form-select-sm" asp-items="ViewBag.TipoAtivoId" required>
+                <option value="">Selecione...</option>
+            </select>
+        </div>
+        <div class="mb-2">
+            <label class="form-label">Número de identificação</label>
+            <input type="text" name="Nome" class="form-control form-control-sm" required />
+        </div>
+        <div class="mb-2">
+            <label class="form-label">Número Série</label>
+            <input type="text" name="NumeroSerie" class="form-control form-control-sm" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Adicionar à Posição</button>
+    </form>
+</div>

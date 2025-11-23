@@ -1,0 +1,64 @@
+﻿@model GestaoOS.Models.Ativo
+@{
+    ViewData["Title"] = "Editar Ativo";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/listar.css" asp-append-version="true" />
+}
+
+<section class="detailsPage">
+    <p class="titlePage"><img class="big icon" src="~/Assets/settings.png" alt="Icone"> Editar Ativo</p>
+</section>
+
+<section class="mainPage">
+    <article class="box">
+        <form asp-action="EditAtivo">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="SalaId" />
+            <input type="hidden" asp-for="TipoAtivoId" />
+            <input type="hidden" asp-for="PosicaoId" />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Nome" class="form-label"></label>
+                    <input asp-for="Nome" class="form-control" />
+                    <span asp-validation-for="Nome" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NumeroSerie" class="form-label">Nº de Série / Patrimônio</label>
+                    <input asp-for="NumeroSerie" class="form-control" />
+                    <span asp-validation-for="NumeroSerie" class="text-danger"></span>
+                </div>
+
+                @if (Model.TipoAtivoId == 4) 
+                {
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Descricao" class="form-label">Tipo</label>
+                        <select asp-for="Descricao" class="form-select" asp-items="ViewBag.DescricaoOptions"></select>
+                        <span asp-validation-for="Descricao" class="text-danger"></span>
+                    </div>
+                }
+                else
+                {
+                    <input type="hidden" asp-for="Descricao" />
+                }
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Status" class="form-label"></label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="Funcional">Funcional</option>
+                        <option value="Em Manutenção">Em Manutenção</option>
+                        <option value="Danificado">Danificado</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Salvar Alterações" class="btn btn-primary" />
+                <a asp-action="Gerenciar" asp-route-salaId="@Model.SalaId" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </article>
+</section>

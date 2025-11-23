@@ -1,0 +1,88 @@
+/* Container para os cards de KPI */
+.kpi-container {
+    display: flex;
+    gap: 50px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.kpi-card {
+    flex: 1;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    text-align: center;
+    padding: 20px;
+}
+
+    .kpi-card .card-title {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    .kpi-card .card-text {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #005baa; /* Cor principal SENAI */
+    }
+
+/* Container principal para as colunas de baixo */
+.dashboard-main-container {
+    display: flex;
+    gap: 30px;
+}
+
+.graficos-container {
+    flex: 1;
+}
+
+.lista-os-container {
+    flex:1;
+    align-items: center;
+    overflow-x: scroll;
+    text-align: center ;
+    min-width:250px;
+}
+
+.grafico-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+    .lista-os-container h6, .grafico-box h6 {
+        font-weight: bold;
+        color: #343a40;
+        margin-bottom: 15px;
+    }
+
+.lista-os-container .table {
+    font-size: 0.9rem;
+}
+
+    .lista-os-container .table a {
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+/* Garante que o dropdown de atribuição não quebre a linha */
+.input-group-sm {
+    flex-wrap: nowrap;
+}
+
+.table-responsive {
+    max-height: 500px; /* Adiciona uma barra de rolagem se a lista for muito grande */
+    overflow-y: auto;
+}
+.kpi-card.ranking-card {
+    text-align: left;
+}
+
+.ranking-card .list-group-item {
+    border: none;
+    padding-left: 0;
+    padding-right: 0;
+}

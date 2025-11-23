@@ -1,0 +1,203 @@
+.mainPage {
+    flex-direction: column;
+}
+
+.container {
+    display: flex;
+    gap: 30px;
+}
+
+.boxs {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.titleBox {
+    font-size: 14px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+    .titleBox img {
+        height: 18px;
+    }
+
+.boxMain {
+    width: 50vw;
+}
+
+.d2 {
+    font-size: 20px;
+    text-align: center;
+    margin: 40px auto;
+}
+
+.box p {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.options {
+    width: 90%;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #f3f3f5;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.roomAtivos {
+    display: flex;
+    flex-direction: column;
+    background-color: #f3f3f5;
+    width: 90%;
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 5px;
+    gap: 10px;
+}
+
+    .roomAtivos p {
+        font-size: 14px;
+        margin: 5px auto;
+    }
+
+.ativos {
+    display: flex;
+    margin: 10px auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 20px;
+}
+
+.numeration {
+    line-height: 50px;
+    word-spacing: 40px;
+}
+
+.boxAtivos {
+    width: 390px;
+}
+
+.containerAtivos {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.ativo {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    background-size: 50%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.filter {
+    width: 50vw;
+}
+
+.check {
+    background-color: springgreen;
+    background-image: url(/Assets/checkButton.png);
+}
+
+.danger {
+    background-color: tomato;
+    background-image: url(/Assets/dangerButton.png);
+}
+
+.boxAtivos p {
+    margin-top: 10px;
+    margin-left: 8.5px;
+}
+
+.found {
+    width: 50px;
+    height: 55px;
+    margin: 20px auto;
+}
+
+.titleCompent {
+    margin-top: 20px;
+}
+
+.component {
+    border-top: 1px solid rgb(211, 211, 211);
+    padding-bottom: 10px;
+}
+
+.view {
+    margin-top: 20px;
+    margin-left: calc(100% - 30px);
+}
+
+.descrption {
+    margin-top: 5px;
+}
+
+.details {
+    margin-top: 5px;
+}
+
+.d1 {
+    margin-top: 20px;
+}
+
+.datas {
+    overflow-y: scroll;
+    max-height: 600px;
+}
+
+.input {
+    width: 200px;
+    margin-top: 10px;
+}
+
+.b2 {
+    margin-top: 10px;
+    width: 100px;
+    margin-left: calc(100% - 120px);
+}
+
+@media (max-width: 600px) {
+    .options {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .box {
+        width: 88%;
+    }
+
+    .container {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 1100px) {
+    .roomAtivos {
+        overflow-x: scroll;
+    }
+}
+.lista-ativos{
+    background-color: white;
+    margin:1px;
+    border: 1px solid black;
+    
+
+}
+.lista-ativos:hover{
+   background-color: lightgrey;
+    
+
+}

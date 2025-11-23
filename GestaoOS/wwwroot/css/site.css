@@ -1,0 +1,27 @@
+/* Estilos para componentes que aparecem em várias páginas */
+
+.titlePage {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.descrption {
+    color: #6c757d;
+}
+
+.box {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.text-danger {
+    font-size: 0.875em;
+    color: #dc3545;
+}
+

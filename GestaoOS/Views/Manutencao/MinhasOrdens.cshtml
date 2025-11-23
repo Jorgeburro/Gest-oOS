@@ -1,0 +1,355 @@
+﻿@model IEnumerable<GestaoOS.Models.OrdemDeServico>
+@{
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    ViewData["Title"] = "Minhas Ordens de Serviço";
+    var statusOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "Em Andamento", Text = "Em Andamento" },
+        new SelectListItem { Value = "Em Espera", Text = "Em Espera" },
+        new SelectListItem { Value = "Concluída", Text = "Concluída" }
+    };
+
+    var statusCounts = Model.GroupBy(o => o.Status).ToDictionary(g => g.Key, g => g.Count());
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/listarManu.css" />
+    <link rel="stylesheet" href="~/css/listar.css" />
+</head>
+
+<div>
+    <p class="titlePage"><img class="icon" src="~/Assets/tool.png" alt="Icone"> @ViewData["Title"]</p>
+    <p class="descrption">Ordens de Serviço atribuídas a você para execução.</p>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="stats-cards">
+    <div class="stat-card andamento">
+        <h5>@(statusCounts.GetValueOrDefault("Em Andamento", 0))</h5>
+        <p>Em Andamento</p>
+    </div>
+    <div class="stat-card espera">
+        <h5>@(statusCounts.GetValueOrDefault("Em Espera", 0))</h5>
+        <p>Em Espera</p>
+    </div>
+    <div class="stat-card concluida">
+        <h5>@(statusCounts.GetValueOrDefault("Concluída", 0))</h5>
+        <p>Concluídas</p>
+    </div>
+</div>
+
+<div class="container-table" style="max-width: 1200px; overflow-x: auto;">
+    <table style ="width: 100%">
+        <thead>
+            <tr style="align-content:space-between">
+                <th>OS #</th>
+                <th>Ativo / Sala</th>
+                <th>Status</th>
+                <th>SLA Alvo</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                // Variáveis de controle para travar a UI
+                bool isConcluida = item.Status == "Concluída";
+                bool isEmEspera = item.Status == "Em Espera";
+                bool isEmAndamento = item.Status == "Em Andamento";
+                bool slaJaDefinido = item.SlaAlvo.HasValue;
+
+                string rowClass = item.Status switch
+                {
+                    "Em Espera" => "os-em-espera",
+                    "Concluída" => "os-concluida",
+                    "Em Andamento" => "os-em-andamento",
+                    _ => "os-aberta"
+                };
+
+                // Verificar se SLA está próximo do vencimento
+                string slaClass = "";
+                if (item.SlaAlvo.HasValue && !isConcluida)
+                {
+                    var diasRestantes = (item.SlaAlvo.Value - DateTime.Now).Days;
+                    if (diasRestantes < 0)
+                        slaClass = "sla-alerta";
+                    else if (diasRestantes <= 1)
+                        slaClass = "sla-warning";
+                }
+
+                <tr id="os-row-@item.Id" data-os-id="@item.Id" class="@rowClass" >
+                    <td>
+                        <strong>#@item.Id</strong>
+                        @{
+                            var diasAberta = (DateTime.Now - item.DataCriacao).Days;
+                        }
+                        @if (diasAberta > 3 && !isConcluida)
+                        {
+                            <span class="prioridade-badge">@diasAberta dias</span>
+                        }
+                    </td>
+                    <td>
+                        <strong>@item.Ativo.Nome</strong>
+                        <br /><small class="text-muted">@item.Ativo.Sala.Nome</small>
+                        <br /><small class="text-muted">Aberto: @item.DataCriacao.ToString("dd/MM/yyyy HH:mm")</small>
+                    </td>
+                    <td>
+                        @if (isConcluida)
+                        {
+                            <span class="badge bg-success">@item.Status</span>
+                            @if (item.DataConclusao.HasValue)
+                            {
+                                <br>
+                    
+                                <small class="text-muted">@item.DataConclusao.Value.ToString("dd/MM/yyyy")</small>
+                            }
+                        }
+                        else if (isEmEspera)
+                        {
+                            <span class="badge bg-warning text-dark">@item.Status</span>
+                            <span class="prioridade-badge">ATENÇÃO</span>
+                        }
+                        else
+                        {
+                            <select name="status" class="form-select form-select-sm status-dropdown">
+                                <option value="@item.Status" selected>@item.Status</option>
+                                <option value="Em Espera">Colocar em Espera...</option>
+                                <option value="Concluída">Marcar como Concluída</option>
+                            </select>
+                        }
+                    </td>
+                    <td style="padding-right: 30px">
+                        <input name="slaAlvo" type="date" class="form-control form-control-sm @slaClass"
+                               value="@(item.SlaAlvo?.ToString("yyyy-MM-dd"))"
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")"
+                               @(isConcluida || slaJaDefinido ? "disabled" : "") />
+
+                        @if (item.SlaAlvo.HasValue && !isConcluida)
+                        {
+                            var diasRestantes = (item.SlaAlvo.Value - DateTime.Now).Days;
+                            if (diasRestantes < 0)
+                            {
+                                <small class="sla-alerta">Vencido há @Math.Abs(diasRestantes) dia(s)</small>
+                            }
+                            else if (diasRestantes <= 1)
+                            {
+                                <small class="sla-warning">Vence em @diasRestantes dia(s)</small>
+                            }
+                            else
+                            {
+                                <small class="text-muted">@diasRestantes dia(s) restantes</small>
+                            }
+                        }
+                    </td>
+                    <td >
+                        <a asp-controller="OrdemDeServicos" asp-action="Details" asp-route-id="@item.Id" class="action-icon" title="Ver Detalhes">
+                            <img class="icon" src="~/Assets/view.png" alt="Detalhes" />
+                        </a>
+                        @if (!isConcluida && !isEmEspera)
+                        {
+                            <button type="button" class="btn btn-primary btn-sm btn-salvar-os" title="Salvar Alterações">
+                                <img class="icon" src="~/Assets/check.png" alt="Salvar" />
+                            </button>
+                        }
+
+                    </td>
+                    <input type="hidden" name="observacao" value="@item.Observacao" />
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Any())
+    {
+        <p class="text-muted mt-2" style="margin-top: 30px;"><img class="icon" src="~/Assets/danger.png" alt="Vazio"> Nenhuma ordem de serviço atribuída a você no momento.</p>
+    }
+</div>
+
+<div class="modal fade" id="modalEmEspera" tabindex="-1" aria-labelledby="modalEmEsperaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEmEsperaLabel">Justificativa para "Em Espera"</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <strong>Atenção:</strong> Ao colocar uma OS em espera, ela será sinalizada como prioritária para o gestor.
+                </div>
+                <div class="mb-3">
+                    <label for="justificativa-texto" class="form-label">Motivo da Espera <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="justificativa-texto" rows="3" placeholder="Descreva o impedimento ou o motivo da pausa..." required></textarea>
+                </div>
+                <hr />
+                <h6>Adicionar Peças/Materiais Necessários (Opcional)</h6>
+                <div class="input-group mb-3">
+                    <input type="text" id="material-nome" class="form-control" placeholder="Nome da peça">
+                    <input type="number" id="material-qtd" class="form-control" placeholder="Qtd" value="1" min="1" style="max-width: 80px;">
+                    <button class="btn btn-outline-secondary" type="button" id="btn-add-material">Adicionar</button>
+                </div>
+                <ul class="list-group" id="lista-materiais"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-salvar-espera">Salvar Justificativa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalEmEspera = new bootstrap.Modal(document.getElementById('modalEmEspera'));
+            let osRowAtual = null;
+
+            function submitOsForm(tableRow, overrideStatus = null) {
+                const osId = tableRow.dataset.osId;
+                const status = overrideStatus || tableRow.querySelector('[name="status"]').value;
+                const slaAlvo = tableRow.querySelector('[name="slaAlvo"]').value;
+                const observacao = tableRow.querySelector('[name="observacao"]').value;
+
+                // Validação adicional para status "Concluída"
+                if (status === 'Concluída') {
+                    if (!confirm('Tem certeza que deseja marcar esta OS como concluída? Esta ação não pode ser desfeita.')) {
+                        tableRow.querySelector('[name="status"]').value = tableRow.querySelector('[name="status"]').value;
+                        return;
+                    }
+                }
+
+                // Cria um formulário na memória
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.action = '@Url.Action("AtualizarOS", "Manutencao")';
+
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                form.innerHTML = `
+                    <input type="hidden" name="__RequestVerificationToken" value="${token ? token.value : ''}" />
+                    <input type="hidden" name="ordemDeServicoId" value="${osId}" />
+                    <input type="hidden" name="status" value="${status}" />
+                    <input type="hidden" name="slaAlvo" value="${slaAlvo}" />
+                    <input type="hidden" name="observacao" value="${observacao}" />
+                `;
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            // --- Lógica do Modal ---
+            const btnSalvarEspera = document.getElementById('btn-salvar-espera');
+            btnSalvarEspera.addEventListener('click', function() {
+                if (osRowAtual) {
+                    const justificativaInput = document.getElementById('justificativa-texto');
+                    const listaMateriaisUl = document.getElementById('lista-materiais');
+
+                    let observacaoFinal = justificativaInput.value.trim();
+                    const materiais = [];
+                    listaMateriaisUl.querySelectorAll('li span').forEach(item => { materiais.push(item.innerText); });
+
+                    if (materiais.length > 0) {
+                        observacaoFinal += "\n\n--- Materiais Solicitados ---\n" + materiais.join('\n');
+                    }
+
+                    if (!observacaoFinal) {
+                        alert('A justificativa é obrigatória para colocar o chamado em espera.');
+                        justificativaInput.focus();
+                        return;
+                    }
+
+                    osRowAtual.querySelector('[name="observacao"]').value = observacaoFinal;
+                    submitOsForm(osRowAtual, 'Em Espera');
+                }
+            });
+
+            // Adiciona evento aos botões de salvar de cada linha
+            document.querySelectorAll('.btn-salvar-os').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tableRow = this.closest('tr');
+                    const slaInput = tableRow.querySelector('[name="slaAlvo"]');
+
+                    // Validar se SLA foi definido para ações que não sejam "Em Espera"
+                    if (!slaInput.value && tableRow.querySelector('[name="status"]').value !== 'Em Espera') {
+                        if (!confirm('Deseja salvar sem definir um SLA? É recomendável definir uma data alvo.')) {
+                            slaInput.focus();
+                            return;
+                        }
+                    }
+
+                    submitOsForm(tableRow);
+                });
+            });
+
+            // Adiciona evento aos dropdowns de status
+            document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+                let valorOriginal = dropdown.value;
+                dropdown.addEventListener('focus', function() { valorOriginal = this.value; });
+
+                dropdown.addEventListener('change', function() {
+                    if (this.value === 'Em Espera') {
+                        osRowAtual = this.closest('tr');
+
+                        document.getElementById('justificativa-texto').value = '';
+                        document.getElementById('lista-materiais').innerHTML = '';
+
+                        modalEmEspera.show();
+                        this.value = valorOriginal;
+                    }
+                });
+            });
+
+            // Lógica para adicionar material
+            const btnAddMaterial = document.getElementById('btn-add-material');
+            btnAddMaterial.addEventListener('click', function() {
+                const nomeInput = document.getElementById('material-nome');
+                const qtdInput = document.getElementById('material-qtd');
+                const listaUl = document.getElementById('lista-materiais');
+                const nome = nomeInput.value.trim();
+                const qtd = qtdInput.value;
+
+                if (nome && qtd > 0) {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.innerHTML = `<span>${qtd}x ${nome}</span> <button type="button" class="btn-close btn-sm" aria-label="Remove">x</button>`;
+                    listaUl.appendChild(li);
+                    nomeInput.value = '';
+                    qtdInput.value = '1';
+                    li.querySelector('.btn-close').addEventListener('click', function() { li.remove(); });
+                }
+            });
+
+            // Validação do SLA Alvo
+            document.querySelectorAll('input[name="slaAlvo"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const dataEscolhida = new Date(this.value);
+                    const hoje = new Date();
+                    hoje.setHours(0, 0, 0, 0);
+
+                    if (dataEscolhida < hoje) {
+                        alert('A data do SLA não pode ser anterior à data atual.');
+                        this.value = '';
+                        this.focus();
+                    }
+                });
+            });
+
+            // Atualiza o atributo min dinamicamente
+            setInterval(function() {
+                const hoje = new Date().toISOString().split('T')[0];
+                document.querySelectorAll('input[name="slaAlvo"]').forEach(input => {
+                    if (!input.disabled) {
+                        input.setAttribute('min', hoje);
+                    }
+                });
+            }, 60000);
+        });
+    </script>
+}

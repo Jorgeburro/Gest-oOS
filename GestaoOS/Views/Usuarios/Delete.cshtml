@@ -1,0 +1,24 @@
+﻿@model GestaoOS.Models.Usuario
+
+@{
+    ViewData["Title"] = "Criar Novo Usuário";
+}
+
+<p class="titlePage"><img class="big icon" src="/Assets/user.png" alt="Icone"> Gerenciar Usuário</p>
+<p class="descrption">Exclua e gerencie os usuarios da sua organização</p>
+
+<p>Realmente deseja excluir o @Model.Nome permanentemente do sistema?</p>
+
+<div style="display:flex; gap: 10px;">
+    <a asp-action="index"><input class="submit" type="submit" value="Cancelar"></a>
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input style="background-color:tomato; color:white;" class="submit" type="submit" value="Deletar">
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,45 @@
+﻿@model IEnumerable<GestaoOS.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Lista de Usuários";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/listar.css">
+</head>
+
+<p class="titlePage"><img class="big icon" src="/Assets/user.png" alt="Icone"> Gerenciar Usuários</p>
+<p class="descrption">Visualize e gerencie os usuarios da sua organização</p>
+
+<p style="max-width: 230px;">
+    <a asp-action="Create" class="btn btn-primary">Criar Novo Usuário</a>
+</p>
+
+<div style="min-width: 250px; overflow-y: scroll;">
+    <table >
+        <thead style="text-align: left">
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Perfil</th>
+                <th>Opções</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nome</td>
+                    <td>@item.Email</td>
+                    <td>@item.UserName</td>
+                    <td>
+                        <div >
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="aButton"><img class="icon" src="~/Assets/edit-text.png" alt="Icone"></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="aButton"><img class="icon" src="~/Assets/trash.png" alt="Icone"></a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Estilos gerais */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+            .header img {
+                max-width: 150px;
+            }
+
+        .content {
+            padding: 20px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #0d6efd;
+            color: #ffffff;
+            padding: 15px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #888888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{LogoUrl}}" alt="Logo da Empresa">
+        </div>
+        <div class="content">
+            <h1>Redefinição de Senha</h1>
+            <p>Olá, recebemos uma solicitação para redefinir a senha da sua conta. Se você não fez esta solicitação, pode ignorar este e-mail.</p>
+            <p>Para criar uma nova senha, clique no botão abaixo:</p>
+            <p>
+                <a href="{{CallbackUrl}}" class="button">Redefinir Minha Senha</a>
+            </p>
+            <p>Este link é válido por um tempo limitado.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; @DateTime.Now.Year Gestão OS. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

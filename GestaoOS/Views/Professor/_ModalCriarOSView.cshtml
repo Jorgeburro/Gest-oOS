@@ -1,0 +1,38 @@
+﻿@model List<Ativo>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning">
+        <strong>Posição Vaga.</strong><br />
+        Nenhum ativo fixo (Computador, Mesa, etc.) foi cadastrado nesta posição pelo Gestor.
+    </div>
+    return;
+}
+
+<div class="alert alert-info">
+    Selecione o ativo específico desta posição que apresenta defeito:
+</div>
+
+<div class="list-group">
+    @foreach (var ativo in Model.OrderBy(a => a.TipoAtivo?.Nome)) 
+    {
+        <form asp-controller="OrdemDeServicos" asp-action="Create" method="post" class="list-group-item list-group-item-action">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="AtivoId" value="@ativo.Id" />
+
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">@ativo.TipoAtivo?.Nome</h5>
+                <small>Patrimônio: @(ativo.NumeroSerie ?? "N/A")</small>
+            </div>
+            <p class="mb-1">@ativo.Nome</p>
+
+            <hr />
+
+            <div class="input-group">
+                <textarea name="Descricao" class="form-control" rows="2" placeholder="Descreva o problema específico deste item..." required></textarea>
+                <button type="submit" class="btn btn-success">Abrir OS</button>
+            </div>
+        </form>
+    }
+</div>

@@ -1,0 +1,50 @@
+﻿@model GestaoOS.Models.OrdemDeServico
+
+@{
+    ViewData["Title"] = "Validar Ordem de Serviço";
+}
+
+<div class="titlePage">
+    <h2><img class="icon" src="~/Assets/check.png" alt="Icone"> @ViewData["Title"]</h2>
+    <p>Confirme a resolução do problema para arquivar a Ordem de Serviço.</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <strong>Resumo da OS #@Model.Id</strong>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Ativo:</dt>
+            <dd class="col-sm-9">@Model.Ativo.Nome</dd>
+
+            <dt class="col-sm-3">Problema Reportado:</dt>
+            <dd class="col-sm-9">@Model.Descricao</dd>
+
+            <dt class="col-sm-3">Técnico:</dt>
+            <dd class="col-sm-9">@Model.Responsavel.Nome</dd>
+        </dl>
+
+        <div class="alert alert-info">
+            <h5 class="alert-heading">Solução Aplicada pelo Técnico</h5>
+            <p style="white-space: pre-wrap;" class="mb-0">@(Model.Observacao ?? "Os Concluída.")</p>
+        </div>
+
+        <hr />
+
+        <form asp-action="Validar">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <div class="mb-3">
+                <label for="observacaoValidacao" class="form-label">Sua Observação (Opcional)</label>
+                <textarea name="observacaoValidacao" class="form-control" rows="3" placeholder="Ex: O problema foi resolvido com sucesso, tudo funcionando."></textarea>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success">Confirmar Validação e Arquivar OS</button>
+                <a asp-action="MeusChamados" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

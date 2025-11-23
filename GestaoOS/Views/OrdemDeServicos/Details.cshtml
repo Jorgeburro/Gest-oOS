@@ -1,0 +1,87 @@
+﻿@model GestaoOS.Models.OrdemDeServico
+@using GestaoOS.Services
+
+@{
+    ViewData["Title"] = $"Detalhes da OS #{Model.Id}";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/listar.css" asp-append-version="true" />
+}
+
+<p class="titlePage"><img class="icon" src="~/Assets/info.png" alt="Icone"> @ViewData["Title"]</p>
+
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="os-details-card">
+    <div class="row">
+        <div class="col-md-8">
+            <h4><span class="badge bg-primary">Status: @Model.Status</span> <br />Ativo: @Model.Ativo?.Nome</h4>
+            <p class="text-muted">@Model.Ativo?.Sala?.Nome</p>
+            <hr />
+
+            <dl class="row" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                <dt>Problema Reportado: @Model.Descricao</dt>
+
+                <dt>Solicitante: @Model.Solicitante?.Nome</dt>
+
+                <dt>Data de Abertura: @Model.DataCriacao.ToString("g")</dt>
+
+                <dt>Técnico Responsável: @(Model.Responsavel?.Nome ?? "Aguardando atribuição")</dt>
+
+                <dt>SLA Alvo: @(Model.SlaAlvo?.ToString("dd/MM/yyyy") ?? "Não definido")</dt>
+            </dl>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Observacao))
+            {
+                <div class="alert alert-warning">
+                    <h5 class="alert-heading">Justificativa / Materiais (Em Espera)</h5>
+                    <p style="white-space: pre-wrap;">@Model.Observacao</p>
+                </div>
+            }
+        </div>
+            @if (Model.ImagemConteudo != null)
+            {
+                <article class="box" style="width: 450px;">
+                    <h6 style="margin-top: 10px">Imagem Anexada</h6>
+                    @{
+                        var base64 = Convert.ToBase64String(Model.ImagemConteudo);
+                        var imgSrc = $"data:image/png;base64,{base64}";
+                        <img style="width: 100%;" src="@imgSrc" class="img-fluid rounded" alt="Imagem da OS" />
+                    }
+                </article>
+            }
+        
+    </div>
+</div>
+
+<div class="mt-4">
+    @if (User.IsInRole(RolesGlobais.Gestor) && Model.Status == "Em Espera")
+    {
+        <form asp-action="AprovarEspera" asp-route-id="@Model.Id" method="post" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success">Aprovar e Retornar para "Em Andamento"</button>
+        </form>
+    }
+
+    @if (User.IsInRole(RolesGlobais.Manutencao))
+    {
+        <a asp-controller="Manutencao" asp-action="MinhasOrdens" class="btn btn-secondary">Voltar</a>
+    }
+    @if (User.IsInRole(RolesGlobais.Professor))
+    {
+        <a asp-controller="Professor" asp-action="MeusChamados" class="btn btn-secondary">Voltar</a>
+    }
+    @if (User.IsInRole(RolesGlobais.Gestor))
+    {
+        <a asp-action="ListagemCompleta" class="btn btn-secondary">Voltar para a Lista</a>
+    }
+</div>

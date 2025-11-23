@@ -1,0 +1,63 @@
+﻿@model GestaoOS.Models.Ativo
+
+
+<head>
+    <link rel="stylesheet" href="~/css/gerenciarAtivos.css">
+    <link rel="stylesheet" href="~/css/componente.css">
+</head>
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<section class="boxes">
+    <article class="box">
+        <p class="titleBox"><img class="icon" src="/Assets/info.png" alt="Icone"> Detalhes do Ativo</p>
+
+        <div class="container">
+            <div class="component">
+                <p class="titleCompent">@Model.TipoAtivo?.Nome - @Model.Nome</p>
+                <p class="descrption">@Model.Descricao</p>
+
+                <p class="details d1">Status: 
+                    @{
+                        if (Model.Status.Equals("Funcional"))
+                        {
+                            <img class="icon" src="/Assets/checkButton.png" alt="Icone"> 
+                        }
+                        else
+                        {
+                            <img class="icon" src="/Assets/dangerButton.png" alt="Icone"> 
+                        }
+                    }
+
+                    @Model.Status
+                </p>
+                <p class="details">Sala: <img class="icon" src="/Assets/gps.png" alt="Icone"> @Model.Sala?.Nome</p>
+
+     
+            </div>
+        </div>
+    </article>
+  
+</section>
+
+<div style="display:flex">
+
+    <div style="display:flex">
+
+        <a asp-controller="Ativos"
+           asp-action="Gerenciar"
+           class="btn btn-secondary me-2">
+            Voltar para a lista
+        </a>
+
+        <a asp-controller="Ativos"
+           asp-action="EditAtivo"
+           asp-route-id="@Model.Id"
+           asp-route-salaId="@Model.SalaId"
+           class="btn btn-primary">
+            Editar
+        </a>
+    </div>
+</div>

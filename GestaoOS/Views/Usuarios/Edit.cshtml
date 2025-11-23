@@ -1,0 +1,53 @@
+﻿@model GestaoOS.Models.Usuario
+
+@{
+    ViewData["Title"] = "Editar Usuário";
+}
+
+<p class="titlePage"><img class="big icon" src="/Assets/user.png" alt="Icone"> Gerencie o Usuário Selecionado</p>
+<p class="descrption">Edite e gerencie os usuarios da sua organização</p>
+
+<article class="card" style="max-width: 350px;">
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+
+        <div class="inputs">
+            <label asp-for="Nome" class="control-label"></label>
+            <input asp-for="Nome" class="form-control" />
+            <span asp-validation-for="Nome" class="text-danger"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+
+        <div class="inputs">
+            <label for="RoleSelecionada" class="control-label">Perfil</label>
+            <select name="RoleSelecionada" id="roleDropdown" class="form-control" asp-items="ViewBag.RolesDisponiveis">
+                <option value="">-- Selecione um Perfil --</option>
+            </select>
+        </div>
+
+        <div class="inputs" id="especializacaoDiv" style="display: none;">
+            <label asp-for="EspecializacaoId" class="control-label">Especialização</label>
+            <select asp-for="EspecializacaoId" class="form-control" asp-items="ViewBag.Especializacoes">
+                <option value="">-- Selecione uma Especialização --</option>
+            </select>
+        </div>
+
+        <div class="inputs">
+            <input type="submit" value="Salvar" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Voltar para a Lista</a>
+        </div>
+    </form>
+</article>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,64 @@
+﻿@model IEnumerable<GestaoOS.Models.OrdemDeServico>
+
+@{
+    ViewData["Title"] = "Meus Chamados";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/listar.css" />
+}
+
+<div>
+    <p class="titlePage"><img class="icon" src="~/Assets/list.png" alt="Icone"> Meus Chamados</p>
+    <p class="descrption">Lista de Ordens de Serviço solicitadas por você ou de salas sob sua responsabilidade.</p>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="container-table" style="min-width: 450px; overflow-x: scroll; text-align:center">
+    <table class="table-list">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Ativo</th>
+                <th>Sala</th>
+                <th>Data Criação</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><span class="badge bg-warning text-dark">@item.Status</span></td>
+                    <td>@item.Ativo.Nome</td>
+                    <td>@item.Ativo.Sala.Nome</td>
+                    <td>@item.DataCriacao.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Descricao</td>
+                    <td class="actions-cell" style="display: flex; gap:10px">
+                        <a asp-controller="OrdemDeServicos" asp-action="Details" asp-route-id="@item.Id" class="action-icon" title="Ver Detalhes">
+                            <img class="icon" src="~/Assets/view.png" alt="Detalhes" />
+                        </a>
+
+               
+
+                        @if (item.Status == "Concluída")
+                        {
+                            <a asp-action="Validar" asp-route-id="@item.Id" class="btn btn-success btn-sm" title="Validar Serviço">
+                                Validar
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

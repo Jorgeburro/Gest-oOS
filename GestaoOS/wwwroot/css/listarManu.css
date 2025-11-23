@@ -1,0 +1,85 @@
+﻿.os-em-espera {
+    background-color: #fff3cd !important;
+    border-left: 4px solid #ffc107 !important;
+}
+
+.os-concluida {
+    background-color: #d1edff !important;
+    border-left: 4px solid #28a745 !important;
+}
+
+.os-em-andamento {
+    background-color: #e7f3ff !important;
+    border-left: 4px solid #007bff !important;
+}
+
+.os-aberta {
+    background-color: #f8f9fa !important;
+    border-left: 4px solid #6c757d !important;
+}
+
+.badge-em-espera {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.badge-concluida {
+    background-color: #28a745 !important;
+}
+
+.badge-em-andamento {
+    background-color: #007bff !important;
+}
+
+.stats-cards {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex: 1;
+    min-width: 120px;
+}
+
+    .stat-card.espera {
+        border-left-color: #ffc107;
+    }
+
+    .stat-card.andamento {
+        border-left-color: #007bff;
+    }
+
+    .stat-card.concluida {
+        border-left-color: #28a745;
+    }
+
+.prioridade-badge {
+    display: inline-block;
+    background: #dc3545;
+    color: white;
+    font-size: 0.7em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+.sla-alerta {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.sla-warning {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.tabela5 {
+    width: 80vh !important;
+}
