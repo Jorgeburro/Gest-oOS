@@ -55,6 +55,7 @@ Abra o arquivo `appsettings.json` na raiz do projeto e ajuste a string de conex�
 "ConnectionStrings": {
   "DefaultConnection": "Server=localhost;Database=GestaoOS_DB;User ID=sa;Password=SUA_SENHA;TrustServerCertificate=True"
 }
+```
 
 **Opção B: Visual Studio (LocalDB)**
 *Geralmente é o padrão do Visual Studio, não exige senha.*
@@ -63,7 +64,7 @@ Abra o arquivo `appsettings.json` na raiz do projeto e ajuste a string de conex�
 "ConnectionStrings": {
   "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=GestaoOS_DB;Trusted_Connection=True;MultipleActiveResultSets=true"
 }
-
+```
 #### 3. Criar o Banco de Dados (Migrations)
 
 Agora vamos criar a estrutura do banco automaticamente usando o Entity Framework. No terminal, na pasta do projeto, rode:
@@ -71,7 +72,7 @@ Agora vamos criar a estrutura do banco automaticamente usando o Entity Framework
 ```bash
 dotnet tool install --global dotnet-ef
 dotnet ef database update
-
+```
 #### 4. Executar a Aplicação
 
 Inicie o servidor web:
@@ -79,7 +80,7 @@ Inicie o servidor web:
 ```bash
 dotnet run
 O terminal mostrará o endereço local (ex: http://localhost:5129). Copie e cole no navegador.
-
+```
 ## 🔐 Acesso Inicial (Admin)
 
 Ao rodar pela primeira vez, utilize a conta de administrador padrão para testes:
